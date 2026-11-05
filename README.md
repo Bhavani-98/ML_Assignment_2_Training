@@ -39,7 +39,7 @@ stratification to preserve the ham:spam ratio.
 
 ## c. GitHub Repository Link
 
-`https://github.com/<your-username>/<your-repo>`   *(fill in after pushing)*
+`https://github.com/Bhavani-98/ML_Assignment_2_Training`
 
 ## d. Models Used
 
