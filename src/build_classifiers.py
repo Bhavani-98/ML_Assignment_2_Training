@@ -57,6 +57,11 @@ class Scored:
         }
 
 
+def slugify(label: str) -> str:
+    """Turn a model label into a filesystem-safe artifact slug."""
+    return label.lower().replace(" ", "_").replace("-", "_")
+
+
 def classifier_zoo() -> dict[str, Pipeline]:
     """Return the five classifiers, each wrapped in a scaling pipeline."""
     estimators = {
@@ -115,7 +120,7 @@ def run() -> None:
     for label, pipe in zoo.items():
         pipe.fit(X_fit, y_fit)
         scoreboard[label] = score_model(pipe, X_hold, y_hold).as_row()
-        slug = label.lower().replace(" ", "_").replace("-", "_")
+        slug = slugify(label)
         persist(pipe, f"pipeline_{slug}.pkl")
         print(f"  fitted -> {label}")
 
@@ -126,7 +131,7 @@ def run() -> None:
         "positive_class": 1,
         "class_labels": {"0": "Not Spam", "1": "Spam"},
         "pipelines": {
-            lbl: f"pipeline_{lbl.lower().replace(' ', '_').replace('-', '_')}.pkl"
+            lbl: f"pipeline_{slugify(lbl)}.pkl"
             for lbl in zoo
         },
     }
