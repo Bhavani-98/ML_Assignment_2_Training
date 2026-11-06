@@ -77,10 +77,10 @@ project/
 ├── README.md                      # This file
 ├── sample_test.csv                # 25% hold-out split for uploading into the app
 ├── src/
-│   └── build_classifiers.py       # Trains the five pipelines, writes artifacts
+│   └── build_classifiers.py       # Trains the five pipelines, writes the model/ files
 ├── notebooks/
 │   └── spam_classification.ipynb  # EDA + training + evaluation (executed, with outputs)
-└── artifacts/
+└── model/
     ├── pipeline_logistic_regression.pkl
     ├── pipeline_decision_tree.pkl
     ├── pipeline_k_nearest_neighbors.pkl
@@ -103,18 +103,18 @@ separate scaler file is needed.
 - **All models** tab — a side-by-side comparison table (best value highlighted) and a bar chart.
 - **Detailed report** tab — confusion matrix and a full classification report.
 
-The app loads the pre-fitted pipelines from `artifacts/` and scores the uploaded data;
+The app loads the pre-fitted pipelines from `model/` and scores the uploaded data;
 it never re-trains on the uploaded rows.
 
 ## Run Locally
 
 ```bash
 pip install -r requirements.txt
-python src/build_classifiers.py      # (optional) rebuild the artifacts/ pipelines
+python src/build_classifiers.py      # (optional) rebuild the model/ pipelines
 streamlit run app.py                 # then upload sample_test.csv
 ```
 
-> The repository already ships the trained pipelines in `artifacts/` and the
+> The repository already ships the trained pipelines in `model/` and the
 > `sample_test.csv` hold-out split, so you can run the app and upload the CSV
 > directly without re-running `build_classifiers.py` first.
 

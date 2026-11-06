@@ -17,7 +17,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from sklearn import metrics
 
-ART = pathlib.Path(__file__).resolve().parent / "artifacts"
+ART = pathlib.Path(__file__).resolve().parent / "model"
 
 st.set_page_config(page_title="Spam Detection Explorer", page_icon="📧", layout="wide")
 
@@ -65,7 +65,7 @@ st.write(
 try:
     SCHEMA, PIPES = bootstrap()
 except FileNotFoundError:
-    st.error("Artifacts missing. Please run `python src/build_classifiers.py` first.")
+    st.error("Saved models missing. Please run `python src/build_classifiers.py` first.")
     st.stop()
 
 FEATURES = SCHEMA["features"]

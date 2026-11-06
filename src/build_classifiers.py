@@ -31,7 +31,7 @@ from sklearn import metrics
 SEED = 7
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 RAW_CSV = PROJECT_ROOT / "_spam" / "spambase_full.csv"
-ARTIFACT_DIR = PROJECT_ROOT / "artifacts"
+ARTIFACT_DIR = PROJECT_ROOT / "model"
 LABEL = "is_spam"
 HOLDOUT_FRACTION = 0.25
 
