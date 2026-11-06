@@ -140,6 +140,7 @@ with tab_all:
     board = pd.DataFrame(table).T[["Accuracy", "AUC", "Precision", "Recall", "F1", "MCC"]]
     st.dataframe(board.style.format("{:.3f}").highlight_max(axis=0, color="#cdeccd"),
                  use_container_width=True)
+    st.caption("The best value in each metric column is highlighted in green.")
 
     fig, ax = plt.subplots(figsize=(9, 4))
     board[["Accuracy", "F1", "MCC"]].plot.bar(ax=ax)
