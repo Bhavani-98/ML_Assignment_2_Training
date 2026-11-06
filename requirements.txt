@@ -1,3 +1,5 @@
+# Pinned to exact versions so Streamlit Community Cloud reproduces the same
+# environment that produced the committed artifacts. Update deliberately.
 streamlit==1.66.1
 scikit-learn==1.9.0
 pandas==3.0.5
