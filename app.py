@@ -18,8 +18,17 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 
 ART = pathlib.Path(__file__).resolve().parent / "model"
+SAMPLE_CSV = pathlib.Path(__file__).resolve().parent / "sample_test.csv"
 
 st.set_page_config(page_title="Spam Detection Explorer", page_icon="📧", layout="wide")
+
+
+@st.cache_data
+def load_sample_bytes():
+    """Read the bundled sample_test.csv as raw bytes (for the download button)."""
+    if SAMPLE_CSV.exists():
+        return SAMPLE_CSV.read_bytes()
+    return None
 
 
 @st.cache_resource
@@ -83,19 +92,45 @@ with st.sidebar:
     st.subheader("Submission")
     st.markdown("**Student:** Bhavani S\n\n**ID:** 2026AJ05027")
     st.divider()
-    st.caption("Upload `sample_test.csv` from the repo, or any CSV with the 57 "
-               "Spambase feature columns plus the `is_spam` label.")
+    st.caption("Upload any CSV with the 57 Spambase feature columns plus the "
+               "`is_spam` label, or use the bundled `sample_test.csv` below.")
+    _sample_bytes = load_sample_bytes()
+    if _sample_bytes is not None:
+        st.download_button(
+            "⬇️ Download sample_test.csv",
+            data=_sample_bytes,
+            file_name="sample_test.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
 
 # ----------------------------------------------------------------------------
-# Upload (shared across tabs)
+# Data source (shared across tabs): bundled sample OR user upload
 # ----------------------------------------------------------------------------
-upload = st.file_uploader("Upload labelled test data (CSV)", type="csv")
+sample_available = SAMPLE_CSV.exists()
 
-if upload is None:
-    st.info("⬆️  Upload a CSV to begin. The repository ships with `sample_test.csv`.")
+col_u, col_s = st.columns([3, 2])
+with col_u:
+    upload = st.file_uploader("Upload labelled test data (CSV)", type="csv")
+with col_s:
+    st.write("")  # spacer to align with the uploader label
+    use_sample = st.checkbox(
+        "Use bundled sample_test.csv",
+        value=False,
+        disabled=not sample_available,
+        help="Score the hold-out test set that ships with the repository - no upload needed.",
+    )
+
+if use_sample and sample_available:
+    raw = pd.read_csv(SAMPLE_CSV)
+    st.caption("Scoring the bundled **sample_test.csv** (repository hold-out split).")
+elif upload is not None:
+    raw = pd.read_csv(upload)
+else:
+    st.info("⬆️  Upload a CSV to begin, or tick **Use bundled sample_test.csv** "
+            "to score the test set shipped with the repository.")
     st.stop()
 
-raw = pd.read_csv(upload)
 gap = [c for c in FEATURES if c not in raw.columns]
 if gap:
     st.error(f"CSV is missing {len(gap)} required feature column(s), e.g. {gap[:5]}")
