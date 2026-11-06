@@ -1,5 +1,11 @@
-# Raw UCI download / extraction (not committed; sample_test.csv is committed instead)
-_spam/
+# Raw UCI download / extraction.
+# The large generated CSV and the zip stay out of Git, but the small raw
+# .data file (and its docs) ARE committed so training works offline on any
+# machine via `python src/prepare_data.py`.
+_spam/*
+!_spam/spambase.data
+!_spam/spambase.names
+!_spam/spambase.DOCUMENTATION
 _spam.zip
 
 # Python cruft
