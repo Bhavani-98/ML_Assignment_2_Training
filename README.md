@@ -96,7 +96,7 @@ separate scaler file is needed.
 
 ## Live Streamlit App
 
-`https://<your-app>.streamlit.app`   *(fill in after deploying)*
+`https://mlassignment2training-bhavani-s-2026aj05027.streamlit.app/`
 
 **App features** (all sections shown together on a single page)
 - **Upload** a labelled test CSV, **or** tick *Use bundled sample_test.csv* to score the
@@ -112,8 +112,7 @@ it never re-trains on the uploaded rows.
 
 ```bash
 pip install -r requirements.txt
-python src/prepare_data.py           # fetch raw Spambase into _spam/ (only needed to retrain)
-python src/build_classifiers.py      # (optional) rebuild the model/ pipelines
+python src/build_classifiers.py      # (optional) retrain from the bundled _spam/spambase_full.csv
 streamlit run app.py                 # then upload sample_test.csv
 ```
 
@@ -121,10 +120,12 @@ streamlit run app.py                 # then upload sample_test.csv
 > `sample_test.csv` hold-out split, so you can run the app and upload the CSV
 > directly without re-running `build_classifiers.py` first.
 >
-> The raw Spambase corpus (`_spam/`) is **not** committed (it is git-ignored).
-> To retrain from scratch on a fresh machine, run `python src/prepare_data.py`
-> first — it downloads the dataset from UCI and writes `_spam/spambase_full.csv`
-> with the exact header the training script expects.
+> The raw Spambase corpus now ships in the repository (`_spam/spambase.data` and
+> the prebuilt `_spam/spambase_full.csv`), so you can retrain directly with
+> `python src/build_classifiers.py`. If you ever need to rebuild the CSV from the
+> raw `.data` file (or re-download it from UCI), run `python src/prepare_data.py`
+> first — it writes `_spam/spambase_full.csv` with the exact header the training
+> script expects.
 
 ## Deploy on Streamlit Community Cloud
 
