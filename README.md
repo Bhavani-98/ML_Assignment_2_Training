@@ -114,6 +114,10 @@ python src/build_classifiers.py      # (optional) rebuild the artifacts/ pipelin
 streamlit run app.py                 # then upload sample_test.csv
 ```
 
+> The repository already ships the trained pipelines in `artifacts/` and the
+> `sample_test.csv` hold-out split, so you can run the app and upload the CSV
+> directly without re-running `build_classifiers.py` first.
+
 ## Deploy on Streamlit Community Cloud
 
 1. Push this folder to a public GitHub repository.
