@@ -6,6 +6,7 @@ _spam/*
 !_spam/spambase.data
 !_spam/spambase.names
 !_spam/spambase.DOCUMENTATION
+!_spam/spambase_full.csv
 _spam.zip
 
 # Python cruft
