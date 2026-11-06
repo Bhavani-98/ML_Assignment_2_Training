@@ -98,12 +98,13 @@ separate scaler file is needed.
 `https://<your-app>.streamlit.app`   *(fill in after deploying)*
 
 **App features**
-- **Upload** a labelled test CSV.
+- **Upload** a labelled test CSV, **or** tick *Use bundled sample_test.csv* to score the
+  repository's hold-out split with no upload (also downloadable from the sidebar).
 - **Single model** tab — pick any classifier from a dropdown and see its six metrics.
 - **All models** tab — a side-by-side comparison table (best value highlighted) and a bar chart.
 - **Detailed report** tab — confusion matrix and a full classification report.
 
-The app loads the pre-fitted pipelines from `model/` and scores the uploaded data;
+The app loads the pre-fitted pipelines from `model/` and scores the selected data;
 it never re-trains on the uploaded rows.
 
 ## Run Locally
