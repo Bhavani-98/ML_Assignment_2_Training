@@ -143,76 +143,75 @@ X_in = raw[FEATURES]
 y_in = raw[LABEL].astype(int).to_numpy()
 st.success(f"Loaded {len(raw):,} rows with {len(FEATURES)} features and the '{LABEL}' label.")
 
-tab_single, tab_all, tab_detail = st.tabs(
-    ["🔎 Single model", "📊 All models", "🧩 Detailed report"]
-)
+# ----------------------------------------------------------------------------
+# Section 1 - single model (dropdown + metrics)
+# ----------------------------------------------------------------------------
+st.divider()
+st.subheader("🔎 Single model")
+pick = st.selectbox("Select a classifier", list(PIPES.keys()))
+pipe = PIPES[pick]
+res, pred = score(pipe, X_in, y_in)
+
+st.markdown(f"#### Metrics for **{pick}**")
+left, right = st.columns(2)
+with left:
+    st.metric("Accuracy", f"{res['Accuracy']:.3f}")
+    st.metric("Precision", f"{res['Precision']:.3f}")
+    st.metric("F1 score", f"{res['F1']:.3f}")
+with right:
+    st.metric("AUC", "-" if np.isnan(res["AUC"]) else f"{res['AUC']:.3f}")
+    st.metric("Recall", f"{res['Recall']:.3f}")
+    st.metric("MCC", f"{res['MCC']:.3f}")
 
 # ----------------------------------------------------------------------------
-# Tab 1 - single model (dropdown + metrics)
+# Section 2 - all models comparison
 # ----------------------------------------------------------------------------
-with tab_single:
-    pick = st.selectbox("Select a classifier", list(PIPES.keys()))
-    pipe = PIPES[pick]
-    res, pred = score(pipe, X_in, y_in)
+st.divider()
+st.subheader("📊 All models")
+st.markdown("#### Side-by-side comparison on the selected data")
+table = {name: score(p, X_in, y_in)[0] for name, p in PIPES.items()}
+board = pd.DataFrame(table).T[["Accuracy", "AUC", "Precision", "Recall", "F1", "MCC"]]
+st.dataframe(board.style.format("{:.3f}").highlight_max(axis=0, color="#cdeccd"),
+             use_container_width=True)
+st.caption("The best value in each metric column is highlighted in green.")
 
-    st.markdown(f"#### Metrics for **{pick}**")
-    left, right = st.columns(2)
-    with left:
-        st.metric("Accuracy", f"{res['Accuracy']:.3f}")
-        st.metric("Precision", f"{res['Precision']:.3f}")
-        st.metric("F1 score", f"{res['F1']:.3f}")
-    with right:
-        st.metric("AUC", "-" if np.isnan(res["AUC"]) else f"{res['AUC']:.3f}")
-        st.metric("Recall", f"{res['Recall']:.3f}")
-        st.metric("MCC", f"{res['MCC']:.3f}")
-
-# ----------------------------------------------------------------------------
-# Tab 2 - all models comparison
-# ----------------------------------------------------------------------------
-with tab_all:
-    st.markdown("#### Side-by-side comparison on the uploaded data")
-    table = {name: score(p, X_in, y_in)[0] for name, p in PIPES.items()}
-    board = pd.DataFrame(table).T[["Accuracy", "AUC", "Precision", "Recall", "F1", "MCC"]]
-    st.dataframe(board.style.format("{:.3f}").highlight_max(axis=0, color="#cdeccd"),
-                 use_container_width=True)
-    st.caption("The best value in each metric column is highlighted in green.")
-
-    fig, ax = plt.subplots(figsize=(9, 4))
-    board[["Accuracy", "F1", "MCC"]].plot.bar(ax=ax)
-    ax.set_ylim(0.5, 1.0)
-    ax.set_ylabel("score")
-    ax.set_title("Accuracy / F1 / MCC by model")
-    ax.set_xticklabels(board.index, rotation=20, ha="right")
-    st.pyplot(fig)
+fig, ax = plt.subplots(figsize=(9, 4))
+board[["Accuracy", "F1", "MCC"]].plot.bar(ax=ax)
+ax.set_ylim(0.5, 1.0)
+ax.set_ylabel("score")
+ax.set_title("Accuracy / F1 / MCC by model")
+ax.set_xticklabels(board.index, rotation=20, ha="right")
+st.pyplot(fig)
 
 # ----------------------------------------------------------------------------
-# Tab 3 - confusion matrix + classification report
+# Section 3 - confusion matrix + classification report
 # ----------------------------------------------------------------------------
-with tab_detail:
-    pick2 = st.selectbox("Classifier for detailed breakdown", list(PIPES.keys()), key="detail")
-    pipe2 = PIPES[pick2]
-    pred2 = pipe2.predict(X_in)
+st.divider()
+st.subheader("🧩 Detailed report")
+pick2 = st.selectbox("Classifier for detailed breakdown", list(PIPES.keys()), key="detail")
+pipe2 = PIPES[pick2]
+pred2 = pipe2.predict(X_in)
 
-    names = [CLASS_LABELS["0"], CLASS_LABELS["1"]]
-    cm = metrics.confusion_matrix(y_in, pred2)
+names = [CLASS_LABELS["0"], CLASS_LABELS["1"]]
+cm = metrics.confusion_matrix(y_in, pred2)
 
-    colL, colR = st.columns([1, 1])
-    with colL:
-        st.markdown("**Confusion matrix**")
-        fig2, ax2 = plt.subplots(figsize=(4.5, 4))
-        im = ax2.imshow(cm, cmap="Purples")
-        ax2.set_xticks([0, 1], names)
-        ax2.set_yticks([0, 1], names)
-        ax2.set_xlabel("Predicted")
-        ax2.set_ylabel("Actual")
-        for (i, j), v in np.ndenumerate(cm):
-            ax2.text(j, i, str(v), ha="center", va="center",
-                     color="white" if v > cm.max() / 2 else "black", fontsize=12)
-        fig2.colorbar(im, ax=ax2, fraction=0.046)
-        st.pyplot(fig2)
-    with colR:
-        st.markdown("**Classification report**")
-        rep = metrics.classification_report(
-            y_in, pred2, target_names=names, zero_division=0, output_dict=True
-        )
-        st.dataframe(pd.DataFrame(rep).T.round(3), use_container_width=True)
+colL, colR = st.columns([1, 1])
+with colL:
+    st.markdown("**Confusion matrix**")
+    fig2, ax2 = plt.subplots(figsize=(4.5, 4))
+    im = ax2.imshow(cm, cmap="Purples")
+    ax2.set_xticks([0, 1], names)
+    ax2.set_yticks([0, 1], names)
+    ax2.set_xlabel("Predicted")
+    ax2.set_ylabel("Actual")
+    for (i, j), v in np.ndenumerate(cm):
+        ax2.text(j, i, str(v), ha="center", va="center",
+                 color="white" if v > cm.max() / 2 else "black", fontsize=12)
+    fig2.colorbar(im, ax=ax2, fraction=0.046)
+    st.pyplot(fig2)
+with colR:
+    st.markdown("**Classification report**")
+    rep = metrics.classification_report(
+        y_in, pred2, target_names=names, zero_division=0, output_dict=True
+    )
+    st.dataframe(pd.DataFrame(rep).T.round(3), use_container_width=True)
